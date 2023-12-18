@@ -2,7 +2,7 @@ import http from "http"
 import color from "picocolors"
 import connect from "connect"
 import { WebSocketServer } from "ws"
-import { indexHTMLMiddleware } from "./middleware"
+import { indexHTMLMiddleware, replaceImportMiddleware } from "./middleware"
 
 const middleware = connect()
 const { PORT_HTTP, PORT_WS, PROJECT_NAME } = process.env
@@ -21,6 +21,7 @@ const createWSServer = () => {
   })
 }
 
+middleware.use(replaceImportMiddleware)
 middleware.use(indexHTMLMiddleware)
 
 function createServer() {
