@@ -1,4 +1,5 @@
 import path from "path"
+import fs from "fs"
 
 const ContentTypes = {
   html: "text/html",
@@ -24,4 +25,16 @@ const getFilePathAndContentType = (filename) => {
   }
 }
 
-export { getFilePathAndContentType }
+function getEntryPoint(module) {
+  if (!module.endsWith(".js")) {
+    const packageFile = `./node_modules/${module}/package.json`
+    const content = fs.readFileSync(packageFile, "utf8")
+    const result = JSON.parse(content)
+
+    return `${module}/${result.main}`
+  }
+
+  return module
+}
+
+export { getFilePathAndContentType, getEntryPoint }

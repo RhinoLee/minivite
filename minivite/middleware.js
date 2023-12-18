@@ -1,4 +1,4 @@
-import { getFilePathAndContentType } from "./utils"
+import { getFilePathAndContentType, getEntryPoint } from "./utils"
 import path from "path"
 
 // 處理從 node_modules import 的 js 路徑
@@ -12,7 +12,28 @@ const replaceImportMiddleware = async (req, res, next) => {
     let content = await file.text()
 
     const regex = /from ['"](?!\.\/)([^'"]+)['"]/g
-    content = content.replace(regex, `from "./node_modules/$1"`)
+
+    // pre-bundling
+    const matches = content.match(regex)
+    if (matches) {
+      const mod_regex = /['"](?!\.\/)([^'"]+)['"]/
+
+      const modules = matches
+        .map((m) => {
+          return m.match(mod_regex)[1]
+        })
+        .map(getEntryPoint)
+
+      Bun.build({
+        entrypoints: modules.map((m) => `./node_modules/${m}`),
+        outdir: "./node_modules/.minivite/deps",
+      })
+    }
+
+    content = content.replace(regex, (match, capture) => {
+      const entryPoint = getEntryPoint(capture)
+      return `from "./node_modules/.minivite/deps/${entryPoint}"`
+    })
 
     res.writeHead(200, { "Content-Type": contentType })
     res.end(content)
