@@ -1,1 +1,3 @@
-console.log("Hello via Bun!");
+import { createServer } from "./minivite/server"
+
+createServer()
