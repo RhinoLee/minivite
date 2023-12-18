@@ -2,7 +2,7 @@ import http from "http"
 import color from "picocolors"
 import connect from "connect"
 import { WebSocketServer } from "ws"
-import { indexHTMLMiddleware, replaceImportMiddleware } from "./middleware"
+import { indexHTMLMiddleware, replaceImportMiddleware } from "./middlewares"
 
 const middleware = connect()
 const { PORT_HTTP, PORT_WS, PROJECT_NAME } = process.env
