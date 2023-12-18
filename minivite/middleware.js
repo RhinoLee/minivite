@@ -1,11 +1,23 @@
 import { getFilePathAndContentType } from "./utils"
+import path from "path"
 
 const indexHTMLMiddleware = async (req, res) => {
   const { filePath, contentType } = getFilePathAndContentType(req.url)
 
   try {
     const file = Bun.file(filePath)
-    const content = await file.text()
+    let content = await file.text()
+
+    if (path.basename(filePath) === "index.html") {
+      const regex = /(<head>)([\s\S]*?<\/head>)/i
+      const match = content.match(regex)
+      const clientScript = `<script src="./minivite/client.js"></script>`
+
+      if (match) {
+        content = content.replace(match[0], match[1] + clientScript + match[2])
+      }
+    }
+
     res.writeHead(200, { "Content-Type": contentType })
     res.end(content)
   } catch (err) {
