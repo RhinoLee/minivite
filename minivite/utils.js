@@ -26,6 +26,7 @@ const getFilePathAndContentType = (filename) => {
 }
 
 function getEntryPoint(module) {
+  // 處理像是 "dayjs" 這類的 import，要先去 package.json 找真實引入的 file
   if (!module.endsWith(".js")) {
     const packageFile = `./node_modules/${module}/package.json`
     const content = fs.readFileSync(packageFile, "utf8")
@@ -34,6 +35,7 @@ function getEntryPoint(module) {
     return `${module}/${result.main}`
   }
 
+  // 如果是 "lodash-es/has.js" 這類已經明確知道檔案位置的，不處理直接 return
   return module
 }
 

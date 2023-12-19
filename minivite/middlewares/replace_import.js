@@ -9,6 +9,7 @@ const ExcludeList = ["/minivite/client.js"]
 const replaceImportMiddleware = async (req, res, next) => {
   const { url } = req
 
+  // 處理 app.js（從 index.html 引入的 js 檔）
   if (url.endsWith(".js") && !ExcludeList.includes(url)) {
     const { filePath, contentType } = getFilePathAndContentType(url)
     const file = Bun.file(filePath)
@@ -28,7 +29,7 @@ const replaceImportMiddleware = async (req, res, next) => {
         .map(getEntryPoint)
 
       Bun.build({
-        entrypoints: modules.map((m) => `./node_modules/${m}`),
+        entryPoints: modules.map((m) => `./node_modules/${m}`),
         outdir: "./node_modules/.minivite/deps",
       })
     }
