@@ -41,11 +41,16 @@ function getEntryPoint(module) {
 
 const getRelativePath = (p = __dirname) => {
   const rootPath = process.cwd()
-  return path.relative(p, rootPath)
+  return path.join(path.relative(p, rootPath), p)
 }
 
 const getDepModulePath = (module) => {
-  return path.join(getRelativePath(), "node_modules/.minivite/deps", module)
+  return path.join(getRelativePath("node_modules/.minivite/deps"), module)
 }
 
-export { getFilePathAndContentType, getEntryPoint, getDepModulePath }
+export {
+  getFilePathAndContentType,
+  getEntryPoint,
+  getDepModulePath,
+  getRelativePath,
+}
